@@ -2,8 +2,6 @@
 
 A premium, AI-powered hair and scalp analysis platform designed for **Dermatics India**. This application provides personalized haircare routines based on visual analysis, user history, and hair goals.
 
-![Project Banner](https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6)
-
 ## 🌟 Key Features
 
 *   **AI Scalp & Hair Analysis**: Real-time analysis of hair loss stages (Stage 1-6) and scalp conditions using Google Gemini AI.
