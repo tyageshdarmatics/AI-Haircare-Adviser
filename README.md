@@ -33,7 +33,7 @@ A premium, AI-powered hair and scalp analysis platform designed for **Dermatics 
 
 1.  **Clone the repository**:
     ```bash
-    git clone <your-repo-url>
+    git clone https://github.com/tyageshdarmatics/AI-Haircare-Advisor.git
     cd ai-haircare-advisor
     ```
 
