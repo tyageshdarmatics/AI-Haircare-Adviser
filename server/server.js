@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import serverless from 'serverless-http';
 
 // Needed because you are using ES modules (import syntax)
 const __filename = fileURLToPath(import.meta.url);
@@ -212,6 +213,10 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Server running on http://0.0.0.0:${port}`);
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.LAMBDA_TASK_ROOT && !process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${port}`);
+  });
+}
+
+export const handler = serverless(app);
