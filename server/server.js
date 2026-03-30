@@ -32,7 +32,7 @@ app.use(cors());
 const rawUri = process.env.MONGO_URI || 'mongodb://localhost:27017';
 const mongoUrl = rawUri.split('/Hair-analysis-database')[0];
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080 || 5000;
 let client;
 
 let usersCollection;
@@ -41,7 +41,7 @@ const connectDB = async (retries = 5) => {
   for (let i = 0; i < retries; i++) {
     try {
       if (!client) {
-         client = new MongoClient(mongoUrl);
+        client = new MongoClient(mongoUrl);
       }
       await client.connect();
       const db = client.db('Hair-analysis-database');
