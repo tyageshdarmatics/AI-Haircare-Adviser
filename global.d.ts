@@ -1,15 +1,36 @@
 
-// This file is used to declare global types for libraries loaded via script tags.
-// By declaring these on the window object, we can access them globally
-// in our TypeScript code without getting compiler errors.
-// These are loaded from CDNs in index.html.
-
+// Declare global types for libraries loaded via script tags
 declare global {
   interface Window {
     jspdf: any;
     html2canvas: any;
   }
+
+  namespace NodeJS {
+    interface ProcessEnv {
+      GEMINI_API_KEY?: string;
+      VITE_API_KEY?: string;
+      API_KEY?: string;
+      MONGO_URI?: string;
+      PORT?: string;
+      NODE_ENV?: string;
+    }
+  }
 }
 
-// This export is needed to treat this file as a module.
+// Vite's import.meta.env type declarations
+interface ImportMetaEnv {
+  readonly VITE_API_KEY?: string;
+  readonly GEMINI_API_KEY?: string;
+  readonly MODE: string;
+  readonly BASE_URL: string;
+  readonly PROD: boolean;
+  readonly DEV: boolean;
+  readonly SSR: boolean;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 export {};
