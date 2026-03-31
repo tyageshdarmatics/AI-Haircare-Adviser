@@ -1,4 +1,4 @@
-# AI Haircare Advisor - Dermatics India
+# AI Haircare Adviser - Dermatics India
 
 A premium, AI-powered hair and scalp analysis platform designed for **Dermatics India**. This application provides personalized haircare routines based on visual analysis, user history, and hair goals.
 
