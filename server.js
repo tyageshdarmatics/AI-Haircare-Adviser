@@ -179,6 +179,13 @@ app.get('/api/users/count', async (req, res) => {
   }
 });
 
+// Serve runtime config back to frontend (Vite build on App Runner lacks env vars)
+app.get('/api/config', (req, res) => {
+  res.json({
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY || process.env.VITE_API_KEY || process.env.API_KEY || ''
+  });
+});
+
 // Serve React frontend build — dist/ is in the same root directory
 const distPath = path.join(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
