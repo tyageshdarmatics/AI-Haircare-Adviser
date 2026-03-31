@@ -5,7 +5,7 @@ import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
 let cachedApiKey: string | null = null;
 
-const getRawApiKeys = async (): Promise<string> => {
+export const getRawApiKeys = async (): Promise<string> => {
     if (cachedApiKey) return cachedApiKey;
 
     // Use STATIC process.env references — Vite's define replaces these at build time
