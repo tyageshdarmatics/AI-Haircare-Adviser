@@ -1,0 +1,25 @@
+version: 1.0
+runtime: nodejs18
+
+build:
+  commands:
+    pre-build:
+      - echo "--- Installing root dependencies ---"
+      - npm install
+      - echo "--- Installing server dependencies ---"
+      - cd server && npm install && cd ..
+    build:
+      - echo "--- Building React frontend (vite build) ---"
+      - npm run build
+  env:
+    - name: NODE_ENV
+      value: production
+
+run:
+  command: node server/server.js
+  network:
+    port: 8080
+    env: PORT
+  env:
+    - name: NODE_ENV
+      value: production
