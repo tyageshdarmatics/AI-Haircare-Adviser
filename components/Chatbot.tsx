@@ -16,8 +16,7 @@ interface ChatbotProps {
   routineTitle?: string;
 }
 
-const rawApiKeys = (import.meta.env?.VITE_API_KEY as string | undefined) ?? process.env?.API_KEY;
-const chatApiKeys = rawApiKeys ? rawApiKeys.split(',').map(k => k.trim()).filter(Boolean) : [];
+import { getRawApiKeys } from '../services/geminiService';
 
 const Chatbot: React.FC<ChatbotProps> = ({ analysisResult, haircareGoals, recommendation, chatHistory, setChatHistory, pastUserHistory, saveFullUserProfile, routineTitle }) => {
   const [input, setInput] = useState('');
@@ -72,6 +71,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ analysisResult, haircareGoals, recomm
   }, [analysisResult, haircareGoals, recommendation, pastUserHistory]);
 
   const initializeAndSendMessage = async (message: string): Promise<void> => {
+    const rawKeys = await getRawApiKeys();
+    const chatApiKeys = rawKeys ? rawKeys.split(',').map(k => k.trim()).filter(Boolean) : [];
     if (chatApiKeys.length === 0) throw new Error("API keys not configured.");
 
     const systemInstruction = getSystemInstruction();
