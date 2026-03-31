@@ -14,6 +14,10 @@ build:
   env:
     - name: NODE_ENV
       value: production
+    - name: GEMINI_API_KEY
+      value: AIzaSyCInCLAQqpb9MqoiGl0WZaDFPwHDeTCvcM
+    - name: VITE_API_KEY
+      value: AIzaSyCInCLAQqpb9MqoiGl0WZaDFPwHDeTCvcM
 
 run:
   command: node server/server.js
@@ -23,3 +27,11 @@ run:
   env:
     - name: NODE_ENV
       value: production
+    - name: PORT
+      value: "8080"
+    - name: MONGO_URI
+      value: mongodb+srv://hr_db_user:1ebJ6VuMwTBdpz92@dermaticslive.19vb30j.mongodb.net/
+    - name: GEMINI_API_KEY
+      value: AIzaSyCInCLAQqpb9MqoiGl0WZaDFPwHDeTCvcM
+    - name: VITE_API_KEY
+      value: AIzaSyCInCLAQqpb9MqoiGl0WZaDFPwHDeTCvcM
