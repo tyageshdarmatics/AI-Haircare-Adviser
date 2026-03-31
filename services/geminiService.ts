@@ -3,24 +3,44 @@ import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters }
 import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
-const getRawApiKeys = (): string => {
+let cachedApiKey: string | null = null;
+
+const getRawApiKeys = async (): Promise<string> => {
+    if (cachedApiKey) return cachedApiKey;
+
     // Use STATIC process.env references — Vite's define replaces these at build time
-    // with the actual key value baked into the JavaScript bundle.
-    const rawApiKeys =
+    let rawApiKeys =
         process.env.GEMINI_API_KEY ||
         process.env.API_KEY ||
         process.env.VITE_API_KEY ||
         import.meta.env.VITE_API_KEY ||
         import.meta.env.GEMINI_API_KEY;
 
+    // Fallback: fetch from backend (works in App Runner at runtime)
+    if (!rawApiKeys) {
+        try {
+            const res = await fetch('/api/config');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.GEMINI_API_KEY) {
+                    rawApiKeys = data.GEMINI_API_KEY;
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to fetch API key from backend');
+        }
+    }
+
     if (!rawApiKeys) {
         throw new Error("API key environment variable is not set. Please add GEMINI_API_KEY to your App Runner environment variables.");
     }
-    return rawApiKeys;
+    
+    cachedApiKey = rawApiKeys as string;
+    return cachedApiKey;
 };
 
-const getAiInstances = () => {
-    const rawApiKeys = getRawApiKeys();
+const getAiInstances = async () => {
+    const rawApiKeys = await getRawApiKeys();
     const apiKeys = rawApiKeys.split(',').map(key => key.trim()).filter(key => key);
     if (apiKeys.length === 0) {
         throw new Error("API key environment variable is set, but contains no valid keys.");
@@ -30,7 +50,7 @@ const getAiInstances = () => {
 
 async function generateContentWithFailover(params: GenerateContentParameters): Promise<GenerateContentResponse> {
     let lastError: Error | null = null;
-    const instances = getAiInstances();
+    const instances = await getAiInstances();
 
     for (let i = 0; i < instances.length; i++) {
         const ai = instances[i];
