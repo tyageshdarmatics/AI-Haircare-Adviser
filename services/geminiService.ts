@@ -3,18 +3,18 @@ import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters }
 import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
-const importMetaEnv = typeof import.meta !== 'undefined' ? (import.meta.env as Record<string, string | undefined>) : undefined;
-const processEnv = typeof process !== 'undefined' ? process.env : undefined;
-
 const getRawApiKeys = (): string => {
-    const rawApiKeys = (importMetaEnv?.VITE_API_KEY as string | undefined)
-        ?? importMetaEnv?.GEMINI_API_KEY
-        ?? processEnv?.GEMINI_API_KEY
-        ?? processEnv?.API_KEY
-        ?? processEnv?.VITE_API_KEY;
+    // Use STATIC process.env references — Vite's define replaces these at build time
+    // with the actual key value baked into the JavaScript bundle.
+    const rawApiKeys =
+        process.env.GEMINI_API_KEY ||
+        process.env.API_KEY ||
+        process.env.VITE_API_KEY ||
+        import.meta.env.VITE_API_KEY ||
+        import.meta.env.GEMINI_API_KEY;
 
     if (!rawApiKeys) {
-        throw new Error("API key environment variable is not set. Please set GEMINI_API_KEY in Netlify environment variables.");
+        throw new Error("API key environment variable is not set. Please add GEMINI_API_KEY to your App Runner environment variables.");
     }
     return rawApiKeys;
 };
