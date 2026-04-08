@@ -5,6 +5,26 @@ import { DERMATICS_INDIA_PRODUCTS } from "../productData";
 
 let cachedApiKey: string | null = null;
 
+/** Shown when Gemini returns 429 / quota / rate-limit errors (alerts and UI). */
+export const GEMINI_QUOTA_USER_MESSAGE =
+    'Too many AI requests right now; try again in a few minutes.';
+
+/** Maps Gemini quota / rate-limit failures to a short message for alerts and UI. */
+export function userFacingGeminiError(error: unknown): string {
+    const msg = error instanceof Error ? error.message : String(error);
+    const lower = msg.toLowerCase();
+    if (
+        lower.includes('429') ||
+        lower.includes('quota') ||
+        lower.includes('resource_exhausted') ||
+        lower.includes('rate limit') ||
+        lower.includes('rate-limit')
+    ) {
+        return GEMINI_QUOTA_USER_MESSAGE;
+    }
+    return msg;
+}
+
 export const getRawApiKeys = async (): Promise<string> => {
     if (cachedApiKey) return cachedApiKey;
 
@@ -227,8 +247,11 @@ Provide the output strictly in JSON format according to the provided schema. Be 
         return JSON.parse(jsonText);
 
     } catch (error) {
-        const errMsg = (error as Error).message || 'Unknown error';
+        const errMsg = userFacingGeminiError(error);
         console.error("Error analyzing image:", errMsg);
+        if (errMsg === GEMINI_QUOTA_USER_MESSAGE) {
+            throw new Error(errMsg);
+        }
         throw new Error(`Failed to analyze hair & scalp image. Reason: ${errMsg}`);
     }
 };
@@ -424,8 +447,11 @@ export const generateRoutine = async (
         }
         return JSON.parse(jsonText);
     } catch (error) {
-        const errMsg = (error as Error).message || 'Unknown error';
+        const errMsg = userFacingGeminiError(error);
         console.error("Error generating routine with Gemini:", errMsg);
+        if (errMsg === GEMINI_QUOTA_USER_MESSAGE) {
+            throw new Error(errMsg);
+        }
         throw new Error(`Failed to generate haircare routine. Reason: ${errMsg}`);
     }
 };
