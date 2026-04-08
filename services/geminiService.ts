@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, GenerateContentResponse, Type, GenerateContentParameters } from "@google/genai";
 import { HairProfileData, SkinConditionCategory, SkincareRoutine } from '../types';
 import { DERMATICS_INDIA_PRODUCTS } from "../productData";
@@ -9,10 +8,23 @@ let cachedApiKey: string | null = null;
 export const GEMINI_QUOTA_USER_MESSAGE =
     'Too many AI requests right now; try again in a few minutes.';
 
+/** Shown when Gemini returns 403 / PERMISSION_DENIED (alerts and UI). */
+export const GEMINI_PERMISSION_DENIED_USER_MESSAGE =
+    'AI access is not enabled for this project/API key. Please check your Gemini API key, enable the Generative Language (Gemini) API for the Google project, and ensure billing/quota access is allowed.';
+
 /** Maps Gemini quota / rate-limit failures to a short message for alerts and UI. */
 export function userFacingGeminiError(error: unknown): string {
     const msg = error instanceof Error ? error.message : String(error);
     const lower = msg.toLowerCase();
+    if (
+        lower.includes('403') ||
+        lower.includes('permission_denied') ||
+        lower.includes('permission denied') ||
+        lower.includes('denied access') ||
+        lower.includes('has been denied access')
+    ) {
+        return GEMINI_PERMISSION_DENIED_USER_MESSAGE;
+    }
     if (
         lower.includes('429') ||
         lower.includes('quota') ||
@@ -249,7 +261,7 @@ Provide the output strictly in JSON format according to the provided schema. Be 
     } catch (error) {
         const errMsg = userFacingGeminiError(error);
         console.error("Error analyzing image:", errMsg);
-        if (errMsg === GEMINI_QUOTA_USER_MESSAGE) {
+        if (errMsg === GEMINI_QUOTA_USER_MESSAGE || errMsg === GEMINI_PERMISSION_DENIED_USER_MESSAGE) {
             throw new Error(errMsg);
         }
         throw new Error(`Failed to analyze hair & scalp image. Reason: ${errMsg}`);
@@ -449,7 +461,7 @@ export const generateRoutine = async (
     } catch (error) {
         const errMsg = userFacingGeminiError(error);
         console.error("Error generating routine with Gemini:", errMsg);
-        if (errMsg === GEMINI_QUOTA_USER_MESSAGE) {
+        if (errMsg === GEMINI_QUOTA_USER_MESSAGE || errMsg === GEMINI_PERMISSION_DENIED_USER_MESSAGE) {
             throw new Error(errMsg);
         }
         throw new Error(`Failed to generate haircare routine. Reason: ${errMsg}`);
