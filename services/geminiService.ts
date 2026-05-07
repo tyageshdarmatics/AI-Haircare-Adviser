@@ -27,10 +27,12 @@ export function userFacingGeminiError(error: unknown): string {
     }
     if (
         lower.includes('429') ||
+        lower.includes('503') ||
         lower.includes('quota') ||
         lower.includes('resource_exhausted') ||
         lower.includes('rate limit') ||
-        lower.includes('rate-limit')
+        lower.includes('rate-limit') ||
+        lower.includes('unavailable')
     ) {
         return GEMINI_QUOTA_USER_MESSAGE;
     }
